@@ -11,6 +11,7 @@ architecture sim of tb_ULA32decod is
     signal DecA, DecB, DecC : std_logic;
     signal Saida : std_logic_vector(31 downto 0);
     signal carry_out : std_logic;
+    signal zero : std_logic;
 
     -- Componente ULA32decod
     component ULA32decod is 
@@ -19,7 +20,8 @@ architecture sim of tb_ULA32decod is
             Cin : in std_logic;
             DecA, DecB, DecC : in std_logic;
             Saida : out std_logic_vector(31 downto 0);
-            carry_out : out std_logic
+            carry_out : out std_logic;
+            zero : out std_logic
         );
     end component;
 
@@ -33,46 +35,51 @@ begin
         DecB => DecB,
         DecC => DecC,
         Saida => Saida,
-        carry_out => carry_out
+        carry_out => carry_out,
+        zero => zero
     );
 
     -- Processo de estímulos
     process 
     begin 
-        -- Teste 1: Soma
-        report "Teste 1: Soma";
-        A <= x"0000000F"; B <= x"00000001"; Cin <= '0';
-        DecA <= '0'; DecB <= '1'; DecC <= '1'; -- S1 ativo
+        -- Teste 1: AND
+        report "Teste 1: AND";
+        A <= "11111111111111111111111111111111"; -- Todos 1
+        B <= "00001111000011110000111100001111"; -- Padrão
+        Cin <= '0';
+        DecA <= '0'; DecB <= '0'; DecC <= '0'; -- AND ativo
         wait for 10 ns;
 
-        -- Teste 2: AND
-        report "Teste 2: AND";
-        A <= x"FFFFFFFF"; B <= x"0F0F0F0F"; Cin <= '0';
-        DecA <= '1'; DecB <= '0'; DecC <= '0'; -- S1 ativo
+        -- Teste 2: OR
+        report "Teste 2: OR";
+        A <= "00000000000000000000000000001010"; -- Padrão binário
+        B <= "00000000000000000000000000000011"; -- Padrão binário
+        Cin <= '0';
+        DecA <= '0'; DecB <= '0'; DecC <= '1'; -- OR ativo
         wait for 10 ns;
 
-        -- Teste 3: Soma com Carry-in
-        report "Teste 3: Soma com Carry-in";
-        A <= x"0000FFFF"; B <= x"0000FFFF"; Cin <= '1';
-        DecA <= '0'; DecB <= '1'; DecC <= '1'; -- S1 ativo
+        -- Teste 3: ADD
+        report "Teste 3: ADD";
+        A <= "00000000000000000000000000001110"; -- 15
+        B <= "00000000000000000000000000000001"; -- 1
+        Cin <= '0';
+        DecA <= '0'; DecB <= '1'; DecC <= '0'; -- ADD ativo
         wait for 10 ns;
 
-        -- Teste 4: Subtração
-        report "Teste 4: Subtração";
-        A <= x"00000010"; B <= x"00000001"; Cin <= '1';
-        DecA <= '0'; DecB <= '1'; DecC <= '1'; -- S1 ativo
+        -- Teste 4: SUB
+        report "Teste 4: SUB";
+        A <= "00000000000000000000000000001111"; -- 16 em binário
+        B <= "00000000000000000000000000000001"; -- 1 em binário
+        Cin <= '1'; -- Carry-in para SUB
+        DecA <= '1'; DecB <= '1'; DecC <= '0'; -- SUB ativo
         wait for 10 ns;
 
-        -- Teste 5: OR
-        report "Teste 5: OR";
-        A <= x"12345678"; B <= x"87654321"; Cin <= '0';
-        DecA <= '1'; DecB <= '0'; DecC <= '1'; -- S3 ativo
-        wait for 10 ns;
-
-        -- Teste 6: SLT
-        report "Teste 6: SLT";
-        A <= x"00000002"; B <= x"00000003"; Cin <= '0';
-        DecA <= '1'; DecB <= '1'; DecC <= '0'; -- S4 ativo
+        -- Teste 5: SLT
+        report "Teste 5: SLT";
+        A <= "00000000000000000000000000000010"; -- 2 em binário
+        B <= "00000000000000000000000000000011"; -- 3 em binário
+        Cin <= '0';
+        DecA <= '1'; DecB <= '1'; DecC <= '1'; -- SLT ativo
         wait for 10 ns;
 
         -- Finalizar simulação
