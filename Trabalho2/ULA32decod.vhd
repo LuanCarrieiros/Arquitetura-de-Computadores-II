@@ -14,6 +14,7 @@ entity ULA32decod is
 end entity ULA32decod;
 
 architecture rtl of ULA32decod is
+    
     component ULA32bits is 
         port (
             A, B  : in std_logic_vector(31 downto 0);  -- Entradas de 32 bits

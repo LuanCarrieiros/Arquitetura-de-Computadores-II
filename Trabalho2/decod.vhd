@@ -22,3 +22,11 @@ begin
                  "11" when opcode = "111" else -- SLT
                  "00"; -- Default
 end architecture rtl;
+
+/*
+000 = AND
+001 = OR
+010 = ADD
+110 = SUB
+111 = SLT
+*/

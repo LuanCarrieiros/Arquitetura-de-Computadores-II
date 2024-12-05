@@ -11,6 +11,7 @@ entity ULA is
 end entity ULA;
 
 architecture rtl of ULA is
+
     component overflow is 
         port (
             A_msb, B_msb, Result_msb : in std_logic;
@@ -22,6 +23,7 @@ architecture rtl of ULA is
     signal carry_temp, local_cin : std_logic;
     signal overflow_signal: std_logic; -- Sinal de overflow
 begin 
+    
     -- Configuração para Subtração (invertendo B e ajustando Cin para 1)
     B_invertido <= not B when Sel = "10" or Sel = "11" else B; -- Inverte B para SUB e SLT
     local_cin <= '1' when Sel = "10" or Sel = "11" else '0';  -- Carry-in = 1 para SUB e SLT

@@ -13,6 +13,7 @@ entity ULA32bits is
 end entity ULA32bits;
 
 architecture rtl of ULA32bits is 
+    
     component ULA is 
         port (
             A, B, Cin : in std_logic;                 -- Entradas de 1 bit
