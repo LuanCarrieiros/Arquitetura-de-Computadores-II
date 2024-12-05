@@ -11,23 +11,39 @@ entity ULA is
 end entity ULA;
 
 architecture rtl of ULA is
-    signal B_invertido, AND_out, OR_out, Soma, SLT_out: std_logic; -- Sinais intermediários
-    signal carry_temp, local_cin : std_logic;                      -- Sinais temporários
+    component overflow is 
+        port (
+            A_msb, B_msb, Result_msb : in std_logic;
+            Overflow                 : out std_logic
+        );
+    end component overflow;
+
+    signal B_invertido, AND_out, OR_out, Soma, SLT_out: std_logic;
+    signal carry_temp, local_cin : std_logic;
+    signal overflow_signal: std_logic; -- Sinal de overflow
 begin 
-    -- Inversão de B e definição de Carry-in local
-    B_invertido <= B when Sel(1) = '0' else not B; -- Usa B para ADD, not B para SUB
-    local_cin <= Sel(1);         -- Carry-in = 1 para SUB, 0 para ADD
+    -- Configuração para Subtração (invertendo B e ajustando Cin para 1)
+    B_invertido <= not B when Sel = "10" or Sel = "11" else B; -- Inverte B para SUB e SLT
+    local_cin <= '1' when Sel = "10" or Sel = "11" else '0';  -- Carry-in = 1 para SUB e SLT
 
     -- Operações Lógicas
     AND_out <= A and B;          -- Operação AND
     OR_out <= A or B;            -- Operação OR
 
     -- Operação de Soma/Subtração
-    Soma <= (A xor B_invertido) xor local_cin; -- Soma ou Subtração
+    Soma <= (A xor B_invertido) xor local_cin;
     carry_temp <= (A and B_invertido) or (local_cin and (A xor B_invertido));
 
+    -- Instância do cálculo de Overflow
+    overflow_inst: overflow port map (
+        A_msb => A,
+        B_msb => B,
+        Result_msb => Soma,
+        Overflow => overflow_signal
+    );
+
     -- Operação de SLT (Menor que)
-    SLT_out <= Less when Sel = "11" else '0';
+    SLT_out <= (overflow_signal xor Soma) when Sel = "11" else '0';
 
     -- Multiplexador para Seleção de Operação
     with Sel select
