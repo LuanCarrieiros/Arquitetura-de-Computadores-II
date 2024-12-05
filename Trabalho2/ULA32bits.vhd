@@ -22,50 +22,62 @@ architecture rtl of ULA32bits is
         );
     end component ULA;
 
-    signal carry_chain : std_logic_vector(31 downto 0);       -- Carry entre ULAs
-    signal result_internal : std_logic_vector(31 downto 0);   -- Resultado intermediário
-    signal set_signal : std_logic;                           -- Sinal para SLT (MSB)
+    signal carry_chain : std_logic_vector(31 downto 0); -- Carry entre ULAs
+    signal result_internal : std_logic_vector(31 downto 0); -- Resultado intermediário
+    signal slt_set : std_logic; -- Resultado do SLT
 begin
     -- ULA LSB
     ula_0: ULA port map (
         A => A(0),
         B => B(0),
         Cin => Cin,
-        Sel => operation,       -- Controle da operação
-        Less => set_signal,            -- Sem SLT no LSB
+        Sel => operation,
+        Less => slt_set,
         Saida => result_internal(0),
         carry_out => carry_chain(0)
     );
+
+    -- Comparação bit a bit e cálculo do SLT
+    process (A, B, operation)
+    begin
+        if operation = "11" then
+            if A < B then
+                slt_set <= '1';
+            else
+                slt_set <= '0';
+            end if;
+        else
+            slt_set <= '0';
+        end if;
+    end process;
 
     -- ULAs intermediárias
     gen_ULA: for i in 1 to 30 generate
         ula_i: ULA port map (
             A => A(i),
             B => B(i),
-            Cin => carry_chain(i-1), -- Carry da ULA anterior
+            Cin => carry_chain(i-1),
             Sel => operation,
-            Less => '0',             -- Sem SLT nas intermediárias
+            Less => '0',
             Saida => result_internal(i),
             carry_out => carry_chain(i)
         );
     end generate gen_ULA;
 
     -- ULA MSB
-    ULA_31: ULA port map (
+    ula_31: ULA port map (
         A => A(31),
         B => B(31),
-        Cin => carry_chain(30),     -- Carry da ULA anterior
+        Cin => carry_chain(30),
         Sel => operation,
-        Less => set_signal,         -- Bit para SLT
+        Less => '0',
         Saida => result_internal(31),
         carry_out => carry_out
     );
 
-    -- "Set" para SLT: usa o MSB do resultado da subtração
-    set_signal <= result_internal(31);
-
     -- Resultado final
-    Saida <= result_internal;
+    Saida <= result_internal when operation /= "11" else
+             (31 downto 1 => '0') & slt_set;
 
     -- Detectar se o resultado é zero
     zero <= '1' when result_internal = x"00000000" else '0';
