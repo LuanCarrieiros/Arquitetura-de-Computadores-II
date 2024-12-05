@@ -69,15 +69,23 @@ begin
         -- Teste 4: SUB
         report "Teste 4: SUB";
         A <= "00000000000000000000000000001111"; -- 16 em binário
-        B <= "00000000000000000000000000000001"; -- 1 em binário
+        B <= "00000000000000000000000000001111"; -- 1 em binário
         Cin <= '1'; -- Carry-in para SUB
         DecA <= '1'; DecB <= '1'; DecC <= '0'; -- SUB ativo
         wait for 10 ns;
 
         -- Teste 5: SLT
-        report "Teste 5: SLT";
+        report "Teste 5: SLT A < B";
         A <= "00000000000000000000000000000010"; -- 2 em binário
         B <= "00000000000000000000000000001000"; -- 3 em binário
+        Cin <= '0';
+        DecA <= '1'; DecB <= '1'; DecC <= '1'; -- SLT ativo
+        wait for 10 ns;
+        
+        -- Teste 6: SLT
+        report "Teste 6: SLT A > B";
+        A <= "01000000000000000000000000100010"; -- 2 em binário
+        B <= "00111000000000000000000000001000"; -- 3 em binário
         Cin <= '0';
         DecA <= '1'; DecB <= '1'; DecC <= '1'; -- SLT ativo
         wait for 10 ns;
