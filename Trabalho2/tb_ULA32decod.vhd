@@ -77,10 +77,11 @@ begin
         -- Teste 5: SLT
         report "Teste 5: SLT";
         A <= "00000000000000000000000000000010"; -- 2 em binário
-        B <= "00000000000000000000000000000011"; -- 3 em binário
+        B <= "00000000000000000000000000001000"; -- 3 em binário
         Cin <= '0';
         DecA <= '1'; DecB <= '1'; DecC <= '1'; -- SLT ativo
         wait for 10 ns;
+        
 
         -- Finalizar simulação
         report "Simulação finalizada!";
