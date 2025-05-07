@@ -11,7 +11,7 @@ O objetivo deste repositório é organizar os principais componentes implementad
 - **`designs/`**  
   Módulos VHDL criados em sala de aula: ULA de 32 bits, somadores, decodificadores, etc.
   
-- **`trabalho_ULA32/`** *(nome sugerido)*  
+- **`trabalho_ULA32/`** 
   Projeto mais completo baseado na construção e simulação de uma ULA de 32 bits com decodificação e testes.
 
 ---
